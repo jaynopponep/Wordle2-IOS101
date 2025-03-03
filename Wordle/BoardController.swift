@@ -61,43 +61,67 @@ class BoardController: NSObject,
   // Tip 4: You will need to cast the value to the correct type
   // Checkpoint: Correctly implementing this should allow you to change the number of letters in the goal word!
   private func applyNumLettersSettings(with settings: [String: Any]) {
-    // START YOUR CODE HERE
-    // ...
-    // END YOUR CODE HERE
+      if let inputNumLetters = settings[kNumLettersKey] as? Int {
+          if inputNumLetters > 3 && inputNumLetters < 8 {
+              numItemsPerRow = inputNumLetters
+          } else {
+              numItemsPerRow = 5
+          }
+          print("numItemsPerRow: \(numItemsPerRow)")
+      } else {
+          numItemsPerRow = 5
+          print("Got no items per row")
+      }
   }
-  
-  // Exercise 2: Implement applyNumGuessesSettings to change the number of rows in the board
-  // Tip 1: Use a breakpoint to inspect or print the `settings` argument
-  // Tip 2: There is a constant `kNumGuessesKey` in Constants.swift that you can use as the key to grab the value in the dictionary
-  // Tip 3: Assign the correct value of the setting to the `numRows` property.
-  // Tip 4: You will need to cast the value to the correct type
-  // Checkpoint: Correctly implementing this should allow you to change the number of rows in the board!
-  private func applyNumGuessesSettings(with settings: [String: Any]) {
-    // START YOUR CODE HERE
-    // ...
-    // END YOUR CODE HERE
-  }
-  
-  // Exercise 3: Implement applyThemeSettings to change the goal word according to the theme
-  // Tip 1: There is a constant `kWordThemeKey` in Constants.swift that you can use as the key to grab the theme as a String in the dictionary
-  // Tip 2: Pass-in the theme to `WordGenerator.generateGoalWord` (see WordGenerator.swift) and assign its result to the `goalWord` defined above
-  //  - The value stored in the settings dictionary is a String, but `WordGenerator.generateGoalWord` expects a WordTheme type.
-  //    Use the `WordTheme(rawValue:)` initializer to pass-in the string from the dictionary to get the correct type
-  // Checkpoint: Correctly implementing this should allow you to change the theme of the goal word! Use breakpoints or print statements
-  // to check the before/after value of goalWord and see if it changes to the correct theme
-  private func applyThemeSettings(with settings: [String: Any]) {
-    // START YOUR CODE HERE
-    // ...
-    // END YOUR CODE HERE
-  }
-  
-  // Exercise 4: Implement applyIsAlienWordleSettings to change the goal word after each guess
-  // Tip 1: There is a constant `kIsAlienWordleKey` in Constants.swift that you can use as the key to grab the value in the dictionary
-  // Tip 2: There is a corresponding property located in this file that you should assign the value of the setting to (look at the "Properties" section above).
-  // Checkpoint: Correctly implementing this function should change the goal word each time the user inputs an entire row of letters
-  private func applyIsAlienWordleSettings(with settings: [String: Any]) {
-    // START YOUR CODE HERE
-    // ...
-    // START YOUR CODE HERE
-  }
+    
+    // Exercise 2: Implement applyNumGuessesSettings to change the number of rows in the board
+    // Tip 1: Use a breakpoint to inspect or print the `settings` argument
+    // Tip 2: There is a constant `kNumGuessesKey` in Constants.swift that you can use as the key to grab the value in the dictionary
+    // Tip 3: Assign the correct value of the setting to the `numRows` property.
+    // Tip 4: You will need to cast the value to the correct type
+    // Checkpoint: Correctly implementing this should allow you to change the number of rows in the board!
+    private func applyNumGuessesSettings(with settings: [String: Any]) {
+        if let inputNumGuesses = settings[kNumGuessesKey] as? Int {
+            numRows = inputNumGuesses
+            print("numGuesses: \(numRows)")
+        } else {
+            numRows = 6
+        }
+    }
+    
+    // Exercise 3: Implement applyThemeSettings to change the goal word according to the theme
+    // Tip 1: There is a constant `kWordThemeKey` in Constants.swift that you can use as the key to grab the theme as a String in the dictionary
+    // Tip 2: Pass-in the theme to `WordGenerator.generateGoalWord` (see WordGenerator.swift) and assign its result to the `goalWord` defined above
+    //  - The value stored in the settings dictionary is a String, but `WordGenerator.generateGoalWord` expects a WordTheme type.
+    //    Use the `WordTheme(rawValue:)` initializer to pass-in the string from the dictionary to get the correct type
+    // Checkpoint: Correctly implementing this should allow you to change the theme of the goal word! Use breakpoints or print statements
+    // to check the before/after value of goalWord and see if it changes to the correct theme
+    private func applyThemeSettings(with settings: [String: Any]) {
+        if let inputWordTheme = settings[kWordThemeKey] as? String {
+            print("current word, \(goalWord)")
+            if let wordThemeConverted = WordTheme(rawValue: inputWordTheme) {
+                goalWord = WordGenerator.generateGoalWord(with: wordThemeConverted)
+                print("new word, \(goalWord)")
+            }
+        }
+    }
+    
+    // Exercise 4: Implement applyIsAlienWordleSettings to change the goal word after each guess
+    // Tip 1: There is a constant `kIsAlienWordleKey` in Constants.swift that you can use as the key to grab the value in the dictionary
+    // Tip 2: There is a corresponding property located in this file that you should assign the value of the setting to (look at the "Properties" section above).
+    // Checkpoint: Correctly implementing this function should change the goal word each time the user inputs an entire row of letters
+    private func applyIsAlienWordleSettings(with settings: [String: Any]) {
+        print(isAlienWordle)
+        if let alienWordle = settings[kIsAlienWordleKey] as? Bool {
+            isAlienWordle = alienWordle
+        } else {
+            isAlienWordle = false
+        }
+        if isAlienWordle {
+            numTimesGuessed += 1
+        }
+        if isAlienWordle && numTimesGuessed % numItemsPerRow == 0 {
+            goalWord = WordGenerator.generateGoalWord(with: .countries)
+        }
+    }
 }
